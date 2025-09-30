@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -141,9 +142,31 @@ public class PokeApiService {
         else return "Paldea";
     }
 
+   private static final Map<String, List<String>> TYPE_WEAKNESSES = Map.ofEntries(
+            Map.entry("normal", List.of("Fighting")),
+            Map.entry("fire", List.of("Water", "Ground", "Rock")),
+            Map.entry("water", List.of("Electric", "Grass")),
+            Map.entry("electric", List.of("Ground")),
+            Map.entry("grass", List.of("Fire", "Ice", "Poison", "Flying", "Bug")),
+            Map.entry("ice", List.of("Fire", "Fighting", "Rock", "Steel")),
+            Map.entry("fighting", List.of("Flying", "Psychic", "Fairy")),
+            Map.entry("poison", List.of("Ground", "Psychic")),
+            Map.entry("ground", List.of("Water", "Grass", "Ice")),
+            Map.entry("flying", List.of("Electric", "Ice", "Rock")),
+            Map.entry("psychic", List.of("Bug", "Ghost", "Dark")),
+            Map.entry("bug", List.of("Fire", "Flying", "Rock")),
+            Map.entry("rock", List.of("Water", "Grass", "Fighting", "Ground", "Steel")),
+            Map.entry("ghost", List.of("Ghost", "Dark")),
+            Map.entry("dragon", List.of("Ice", "Dragon", "Fairy")),
+            Map.entry("dark", List.of("Fighting", "Bug", "Fairy")),
+            Map.entry("steel", List.of("Fire", "Fighting", "Ground")),
+            Map.entry("fairy", List.of("Poison", "Steel"))
+    );
     private List<String> calculateWeaknesses(List<PokeApiResponse.PokemonType> types) {
-        // Simplified weakness calculation - in real app, use type effectiveness matrix
-        return List.of("Normal","Fire");
+        return types.stream()
+                .flatMap(type -> TYPE_WEAKNESSES.getOrDefault(type.getType().getName().toLowerCase(), List.of()).stream())
+                .distinct()
+                .toList();
     }
 
     @Data
